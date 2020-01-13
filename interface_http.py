@@ -1,12 +1,23 @@
 import json
 
-from ops.framework import Object
+from ops.framework import EventBase, EventsBase, EventSource, Object
+
+
+class NewClient(EventBase):
+    pass
+
+
+class HTTPServerEvents(EventsBase):
+    new_client = EventSource(NewClient)
 
 
 class HTTPServer(Object):
+    on = HTTPServerEvents()
+
     def __init__(self, parent, relation_name):
         super().__init__(parent, relation_name)
         self.relation_name = relation_name
+        self.framework.observe(parent.on[relation_name].relation_joined, lambda e: self.on.new_client.emit())
 
     @property
     def _relations(self):
