@@ -17,11 +17,14 @@ class HTTPServer(Object):
     def __init__(self, parent, relation_name):
         super().__init__(parent, relation_name)
         self.relation_name = relation_name
-        self.framework.observe(parent.on[relation_name].relation_joined, lambda e: self.on.new_client.emit())
+        self.framework.observe(parent.on[relation_name].relation_joined, self.new_unit)
 
     @property
     def _relations(self):
         return self.model.relations[self.relation_name]
+
+    def new_unit(self, event):
+        self.on.new_client.emit()
 
     def clients(self):
         return [HTTPInterfaceClient(relation, self.model.unit) for relation in self._relations]
