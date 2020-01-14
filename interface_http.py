@@ -14,10 +14,10 @@ class HTTPServerEvents(EventsBase):
 class HTTPServer(Object):
     on = HTTPServerEvents()
 
-    def __init__(self, parent, relation_name):
-        super().__init__(parent, relation_name)
+    def __init__(self, charm, relation_name):
+        super().__init__(charm, relation_name)
         self.relation_name = relation_name
-        self.framework.observe(parent.on[relation_name].relation_joined, self.new_unit)
+        self.framework.observe(charm.on[relation_name].relation_joined, self.new_unit)
 
     @property
     def _relations(self):
